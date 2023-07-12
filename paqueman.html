@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Paqueman!</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    
+    <section id="seleccion_personaje">
+        <h1 class="titulo">Juego ¡Paqueman! 🔫🗡️👊🏼</h1>
+        
+        <h2 class="subtitulo">Selecciona un personaje</h2>
+
+        <div id="contenedor-personajes" class="personajes">
+            
+        </div>
+        <button id="boton_seleccion">Seleccionar</button>
+    
+    </section>
+
+    <section id="ver_mapa">
+        <h1 class="titulo">Muevete por Colombia 🔫🗡️👊🏼</h1>
+        <canvas id="mapa"></canvas>
+        <button onmouseup="detenerMovimiento()" onmousedown="moverTomboIzq()">Izquierda</button>
+        <button onmouseup="detenerMovimiento()" onmousedown="moverTomboDer()">Derecha</button>
+        <button onmouseup="detenerMovimiento()" onmousedown="moverTomboArr()">Arriba</button>
+        <button onmouseup="detenerMovimiento()" onmousedown="moverTomboAba()">Abajo</button>
+    </section>
+
+    <section id="ataque">
+        <h1 class="titulo">Juego ¡Paqueman! 🔫🗡️👊🏼</h1>
+
+        
+        <div id="mensaje">
+            <p id="resultado">¡Que muera el más debil!</p>
+            
+            <div class="reiniciar">
+                <button id="reiniciar">Reiniciar juego</button>
+            </div>
+        </div>
+        
+        <h2 class="subtitulo">Ataque</h2>
+        <div id="contenedor-ataques">
+        </div>
+        
+        <div class="grilla-combate">
+            <div class="combatiente">
+                <p>Tú: <span id="personaje_select"></span></p>
+                <p> Vida: <span id="vida-j">4</span></p>
+                <div class="combatiente" id="ataques-personaje"></div>
+            </div>
+            
+            <div class="combatiente">
+                <p>vs: <span id="enemigo_select"></span></p>
+                <p>Vida: <span id="vida-e">4</span></p>
+                <div class="combatiente" id="ataques-enemigo"></div>
+            </div>
+            
+        </div>
+        
+
+    </section>
+
+
+    <script src="script.js"></script>
+</body>
+</html>

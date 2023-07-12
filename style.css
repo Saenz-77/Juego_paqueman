@@ -1,0 +1,147 @@
+/*#0A81AB*/
+body{
+  margin: 0px;
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+  background-color: #232323;
+} 
+#seleccion_personaje{
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.titulo{
+  width: 100%;
+  padding: 15px 0;
+  font-size: xx-large;
+
+  color: #232323;
+  background-color: #ffcf0f;
+
+  display: inline-flex;
+  justify-content: center;
+}
+.subtitulo{
+  font-size: x-large;
+}
+.personajes{
+  display: flex;
+  gap: 10px;
+}
+input{
+  display: none;
+}
+input:checked + label{
+  background-color: #0A81AB;
+}
+.tarjeta-personaje{
+  width: 200px;
+  background-color: #39A9CB;
+  border-radius: 10px;
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.tarjeta-personaje img{
+  width: 80%;
+  height: 80%;
+}
+#boton_seleccion{
+  font-family: 'Poppins', sans-serif;
+  width: 200px;
+  margin-top: 40px;
+  padding: 10px;
+  border-radius: 20px;
+  border: 2px solid #0A81AB;
+  box-sizing: border-box; 
+  color: #fff;
+  background-color: transparent;
+}
+
+
+#ataque{
+  height: 100vh;
+  flex-direction: column;
+  align-items: center;
+}
+.botones_ataque{
+  padding: 16px;
+  background-color: #2acc5b;
+  color: #fff;
+  border-radius: 40px;
+  border: none;
+  box-sizing: border-box;
+}
+#mensaje{
+  width:  280px;
+  padding: 20px;
+  margin-top: 20px;
+  border-radius: 20px;
+  background-color: #39A9CB;
+
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+#reiniciar{
+  font-family: 'Poppins', sans-serif;
+
+  border: none;
+  color: #fff;
+  border-radius: 10px;
+  background-color: #0A81AB;
+}
+
+.grilla-combate{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 250px;
+}
+.combatiente{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#ver_mapa {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+#mapa {
+  border: 2px solid #fff;
+}
+
+@media (max-width: 630px){
+  /* .botones-ataque{
+
+  } */
+
+  #seleccion_personaje{
+    height: auto;
+  }
+  .titulo{
+    font-size: x-large;
+    margin: 10px 0 0 0;
+    padding: 5px 0;
+  }
+  .subtitulo{
+    font-size: large;
+    margin: 10px 0 5px 0;
+}
+  .personajes{
+    height: auto;
+    flex-direction: column;
+  }
+  .tarjeta-personaje{
+    width: 140px;
+  }
+  #boton_seleccion{
+    margin-top: 10px;
+    padding: 6px;
+  }
+}
