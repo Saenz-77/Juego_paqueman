@@ -20,6 +20,9 @@ const atackEnemigo = document.getElementById('ataques-enemigo')
 const sectionVerMapa = document.getElementById('ver_mapa');
 const mapa = document.getElementById('mapa');
 
+const anchoMaximo = 550
+
+let jugadorId = null
 let i = 0;
 let paquemanes = []
 let ataquesPersonaje;
@@ -31,6 +34,9 @@ let opcionPaquemanes;
 let tombo;
 let ñero;
 let civil;
+let TomboEnemigo;
+let ÑeroEnemigo;
+let CivilEnemigo;
 let roljugador;
 let rolSeleccionado;
 let arma;
@@ -46,50 +52,75 @@ let lienzo = mapa.getContext("2d")
 let intervalo;
 let mapaBackground = new Image()
 mapaBackground.src = './img/mapa.png'
+let alturaMapa;
+let anchuraMapa = window.innerWidth - 20;
+
+if(anchuraMapa > anchoMaximo) {
+  anchuraMapa = anchoMaximo - 20;
+}
+alturaMapa = anchuraMapa * 600 / 800
+
+mapa.width = anchuraMapa
+mapa.height = alturaMapa
 
 
 class Paqueman {
-  constructor(nombre, img, vida){
+  constructor(nombre, img, vida, mapaImg, id = null){
     this.nombre = nombre
     this.img = img
     this.vida = vida
+    this.id = id
     this.ataques = []
-    this.x = 20
-    this.y = 30
-    this.ancho = 80
-    this.alto = 80
+    this.ancho = 40
+    this.alto = 40
+    this.x = aleatorio(10, mapa.width - this.ancho)
+    this.y = aleatorio(10, mapa.height - this.alto)
     this.mapaImg = new Image()
-    this.mapaImg.src = img
+    this.mapaImg.src = mapaImg
     this.velocidadX = 0
     this.velocidadY = 0
   }
+
+  dibujarRol() {
+    lienzo.drawImage(
+      this.mapaImg,
+      this.x,
+      this.y,
+      this.ancho,
+      this.alto
+    )
+  }
 }
 
-let Tombo = new Paqueman('Tombo', './img/tombo.png', 4);
-let Ñero = new Paqueman('Ñero', './img/ñero.png', 3);
-let Civil = new Paqueman('Civil', './img/civil.png', 2);
+let Tombo = new Paqueman('Tombo', './img/tombo.png', 4, './img/caretombo.png');
+let Ñero = new Paqueman('Ñero', './img/ñero.png', 4, './img/careñero.png');
+let Civil = new Paqueman('Civil', './img/civil.png', 4, './img/carecivil.png');
 
-Tombo.ataques.push(
+const ATAQUES_TOMBO = [
   { nombre: '🔫', id: 'ataque_arma' },
   { nombre: '🔫', id: 'ataque_arma' },
   { nombre: '🔫', id: 'ataque_arma' },
   { nombre: '🗡️', id: 'ataque_navaja' },
   { nombre: '👊🏼', id: 'ataque_puño' }
-)
-Ñero.ataques.push(
+]
+const ATAQUES_ÑERO = [
   { nombre: '🗡️', id: 'ataque_navaja' },
   { nombre: '🗡️', id: 'ataque_navaja' },
   { nombre: '🗡️', id: 'ataque_navaja' },
   { nombre: '🔫', id: 'ataque_arma' },
   { nombre: '👊🏼', id: 'ataque_puño' }
-)
-Civil.ataques.push(
+]
+const ATAQUES_CIVIL = [
   { nombre: '👊🏼', id: 'ataque_puño' },
   { nombre: '👊🏼', id: 'ataque_puño' },
   { nombre: '👊🏼', id: 'ataque_puño' },
   { nombre: '🔫', id: 'ataque_arma' },
   { nombre: '🗡️', id: 'ataque_navaja' }
-)
+]
+
+Tombo.ataques.push(...ATAQUES_TOMBO)
+Ñero.ataques.push(...ATAQUES_ÑERO)
+Civil.ataques.push(...ATAQUES_CIVIL)
 
 paquemanes.push(Tombo, Ñero, Civil);
 
@@ -119,11 +150,25 @@ function initgame(){
     
   reinicio.style.display = 'none';
   reinicio.addEventListener('click', reiniciarJuego);
+
+  unirseAlJuego()
+}
+
+function unirseAlJuego() {
+  fetch('http://localhost:8080/unirse')
+    .then(function (response) {
+      if(response.ok) {
+        response.text()
+          .then(function (respuesta) {
+            console.log(respuesta)
+            jugadorId = respuesta
+          })
+      }
+    })
 }
 
 function seleccionPersonaje(){
   sectionPersonaje.style.display = 'none';
-  // sectionAtaque.style.display = 'flex';
   
   if (tombo.checked){
     jugador.innerHTML = tombo.id
@@ -141,19 +186,24 @@ function seleccionPersonaje(){
     alert("Ningún personaje seleccionado")
   }
   
+  PersonajeSeleccionado(roljugador)
+
   extraerAtaques(roljugador);
   
   sectionVerMapa.style.display = 'flex';
   iniciarMapa();
-  
-  enemigo();
-  
 }
-function enemigo(){
-  let seleccion = aleatorio(0, paquemanes.length - 1)
 
-  enemigoSelect.innerHTML = paquemanes[seleccion].nombre
-  ataquesDelEnemigo = paquemanes[seleccion].nombre
+function PersonajeSeleccionado(roljugador) {
+  fetch(`http://localhost:8080/paqueman/${jugadorId}`, {
+    method: 'post',
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      paqueman: roljugador
+    })
+  })
 }
 
 function extraerAtaques(roljugador){
@@ -164,6 +214,11 @@ function extraerAtaques(roljugador){
     }
   }
   mostrarAtaques(ataques)
+}
+
+function seleccionEnemigo(enemigo){
+  enemigoSelect.innerHTML = enemigo.nombre
+  ataquesDelEnemigo = enemigo.ataques
 }
 
 function mostrarAtaques(ataques){
@@ -348,13 +403,61 @@ function dibujarCanvas() {
     mapa.width,
     mapa.height
   )
-  lienzo.drawImage(
-    rolSeleccionado.mapaImg,
-    rolSeleccionado.x,
-    rolSeleccionado.y,
-    rolSeleccionado.ancho,
-    rolSeleccionado.alto
-  )
+  rolSeleccionado.dibujarRol()
+
+  enviarPosicion(rolSeleccionado.x, rolSeleccionado.y)
+
+  TomboEnemigo.dibujarRol()
+  ÑeroEnemigo.dibujarRol()
+  CivilEnemigo.dibujarRol()
+
+  if(rolSeleccionado.velocidadX !== 0 || rolSeleccionado.velocidadY !== 0) {
+    revisarColision(TomboEnemigo)
+    revisarColision(ÑeroEnemigo)
+    revisarColision(CivilEnemigo)
+  }
+}
+
+function enviarPosicion(x, y) {
+  fetch(`http://localhost:8080/paqueman/${jugadorId}/posicion`, {
+    method: 'post',
+    headers: {
+      'content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      x, // es igual a x : x
+      y // es igual a y : y
+    })
+  })
+  .then(function (response) {
+    if(response.ok) {
+      response.json()
+        .then(function ({enemigos}) {  // == .then(function (respuesta) { respuesta.enemigos }
+          console.log(enemigos)
+          
+          enemigos.forEach(function(enemigo) {
+            let paquemanEnemigo = null
+            const paquemanNombre = enemigo.nombre || ''
+            
+            if (paquemanNombre === 'Tombo') {
+              paquemanEnemigo = new Paqueman('Tombo', './img/tombo.png', 4, './img/caretombo.png', );
+            }
+            else if(paquemanNombre === 'Ñero') {
+              paquemanEnemigo = new Paqueman('Ñero', './img/ñero.png', 4, './img/careñero.png');
+            }
+            else if(paquemanNombre === 'Civil') {
+              paquemanEnemigo = new Paqueman('Civil', './img/civil.png', 4, './img/carecivil.png');
+            }
+            
+            paquemanEnemigo.x = enemigo.x
+            paquemanEnemigo.y = enemigo.y
+            paquemanEnemigo.dibujarRol()
+            
+          })
+
+        })
+    }
+  })
 }
 
 function moverDer() {
@@ -396,8 +499,6 @@ function teclaPresionada(event) {
 }
 
 function iniciarMapa() {
-  mapa.width = 600;
-  mapa.height = 500;
   rolSeleccionado = rolObjSeleccionado();
   intervalo = setInterval(dibujarCanvas, 50);
 
@@ -411,6 +512,34 @@ function rolObjSeleccionado() {
       return paquemanes[i]
     }
   }
+}
+
+function revisarColision(enemigo) {
+
+  const arribaEnemigo = enemigo.y
+  const abajoEnemigo = enemigo.y + enemigo.alto
+  const derEnemigo = enemigo.x + enemigo.ancho
+  const izqEnemigo = enemigo.x
+
+  const arribaPersonaje = rolSeleccionado.y
+  const abajoPersonaje = rolSeleccionado.y + rolSeleccionado.alto
+  const derPersonaje = rolSeleccionado.x + rolSeleccionado.ancho
+  const izqPersonaje = rolSeleccionado.x
+
+  if(
+    abajoPersonaje < arribaEnemigo ||
+    arribaPersonaje > abajoEnemigo ||
+    derPersonaje < izqEnemigo ||
+    izqPersonaje > derEnemigo
+  ) {
+    return
+   
+  }
+  detenerMovimiento();
+  clearInterval(intervalo);
+  sectionAtaque.style.display = 'flex';
+  sectionVerMapa.style.display = 'none';
+  seleccionEnemigo(enemigo);
 }
 
 window.addEventListener('DOMContentLoaded', initgame)
